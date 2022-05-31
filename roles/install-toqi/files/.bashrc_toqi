@@ -1,0 +1,23 @@
+### ⊂(＾ω＾)⊃ ###
+
+export LC_ALL=ja_JP.UTF-8
+export EDITOR=vim
+
+# User Scripts
+export PATH=$PATH:$HOME/bin
+
+# Golang
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# Node.js
+export PATH=$PATH:~/.npm-global/bin
+
+# Python
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+if command -v pyenv >/dev/null 2>&1; then
+  eval "$(pyenv init --path)"
+  eval "$(pyenv init -)"
+fi

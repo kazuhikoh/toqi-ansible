@@ -1,0 +1,11 @@
+---
+- name: set locale
+  become: yes
+  locale_gen:
+    name: "{{ system.locale }}"
+    state: present
+
+- name: set timezone
+  become: yes
+  timezone:
+    name: "{{ system.timezone }}"

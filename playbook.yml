@@ -1,0 +1,9 @@
+- hosts: all
+  roles:
+    - system
+    - install-basics
+    - install-nodejs
+    - install-golang
+    - install-ffmpeg
+    - install-toqi
+

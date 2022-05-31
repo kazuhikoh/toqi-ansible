@@ -1,0 +1,22 @@
+---
+- name: check
+  shell: which go
+  register: which_result
+  failed_when: false
+
+- name: fetch archive from "{{ src_url_arm64 }}"
+  get_url:
+    url: "{{ src_url_arm64 }}"
+    dest: "{{ download_dir }}/"
+    timeout: 60
+  when: which_result.rc == 1
+
+- name: extract archive to "{{ dest }}/go"
+  become: yes
+  shell: "tar -C {{ dest }} -xzf {{ download_dir }}/go*.tar.gz"
+  when: which_result.rc == 1
+
+- name: remove archive
+  shell: "rm {{ download_dir }}/go*.tar.gz"
+  when: which_result.rc == 1
+

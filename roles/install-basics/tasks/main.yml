@@ -1,0 +1,17 @@
+---
+- name: basic packages
+  become: yes
+  apt:
+    update_cache: yes
+    pkg:
+      - vim
+      - git
+      - jq
+
+- name: media packages
+  become: yes
+  apt:
+    update_cache: yes
+    pkg:
+      - rtmpdump
+

@@ -1,0 +1,19 @@
+---
+- name: nodejs & npm
+  become: yes
+  apt:
+    update_cache: yes
+    pkg:
+      - nodejs
+      - npm
+
+- name: create directory ~/.npm-global
+  file:
+    path: "{{ npm_prefix }}"
+    state: directory
+
+- name: npm prefix --> "{{ npm_prefix }}"
+  command: npm config set prefix "{{ npm_prefix }}"
+
+- name: install tj/n
+  command: npm install -g n

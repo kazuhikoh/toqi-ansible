@@ -1,0 +1,70 @@
+---
+- name: check
+  command: which ffmpeg
+  register: which_result
+  failed_when: false
+
+- name: install requirements
+  become: yes
+  apt:
+    update_cache: yes
+    pkg:
+      - openssl
+      - libssl-dev
+      - libx264-dev
+      - libx265-dev
+      - libmp3lame-dev
+  when: which_result.rc == 1
+    
+- name: prepare build directory
+  file:
+    state: directory
+    path: "{{ build_dir }}"
+  when: which_result.rc == 1
+
+- name: download repository
+  git:
+    repo: git://source.ffmpeg.org/ffmpeg.git
+    dest: "{{ build_dir }}/ffmpeg"
+  when: which_result.rc == 1
+
+- name: configure 
+  shell: >
+    ./configure 
+    --enable-gpl
+    --enable-nonfree
+    --enable-libx265 
+    --enable-libx264 
+    --enable-openssl
+    --enable-libmp3lame
+    >  "{{ build_dir }}/configure_stdout"
+    2> "{{ build_dir }}/configure_stderr"
+  args:
+    chdir: "{{ build_dir }}/ffmpeg"
+  when: which_result.rc == 1
+
+- name: make
+  shell: >
+    make -j4
+    >  "{{ build_dir }}/make_stdout"
+    2> "{{ build_dir }}/make_stderr"
+  args:
+    chdir: "{{ build_dir }}/ffmpeg"
+  when: which_result.rc == 1
+
+- name: make install
+  become: yes
+  shell: >
+    make install 
+    >  "{{ build_dir }}/makeinstall_stdout"
+    2> "{{ build_dir }}/makeinstall_stderr"
+  args:
+    chdir: "{{ build_dir }}/ffmpeg"
+  when: which_result.rc == 1
+
+- name: remove repository
+  file:
+    state: absent
+    path: "{{ build_dir }}"
+  when: which_result.rc == 1
+

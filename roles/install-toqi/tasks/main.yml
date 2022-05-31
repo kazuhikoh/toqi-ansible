@@ -1,0 +1,70 @@
+---
+- name: check PATH
+  shell: grep "bashrc_toqi" ~/.bashrc
+  register: check_result
+  failed_when: false
+
+- name: put PATH to ~/.bashrc
+  shell: |
+    echo "" >> ~/.bashrc
+    echo "# Include toqi settings (added by toqi-ansible)" >> ~/.bashrc
+    echo ". ~/.bashrc_toqi" >> ~/.bashrc
+  when: check_result.rc == 1
+    
+- name: put ~/.bashrc_toqi
+  copy:
+    src: "../files/.bashrc_toqi"
+    dest: "~/.bashrc_toqi"
+
+- name: put ~/.gitconfig
+  copy:
+    src: "../files/.gitconfig"
+    dest: "~/.gitconfig"
+
+- name: install x-motemen/ghq
+  shell: . ~/.bashrc_toqi && go install github.com/x-motemen/ghq@latest
+  environment:
+    GOPATH: ~/go
+
+- name: install kazuhikoh/toqi
+  shell: |
+    . ~/.bashrc_toqi && ghq get kazuhikoh/toqi
+    ln -s ~/go/src/github.com/kazuhikoh/toqi/bin ~/bin
+    chmod +x ~/bin/*
+    ln -s ~/go/src/github.com/kazuhikoh/toqi/cron ~/cron
+    chmod +x ~/cron/*
+    ln -s ~/go/src/github.com/kazuhikoh/toqi/.crontab ~/.crontab
+  args:
+    creates: ~/.crontab
+
+- name: install google/skicka
+  shell: . ~/.bashrc_toqi && ghq get google/skicka
+
+- name: install kazuhikoh/slack-post
+  shell: |
+    . ~/.bashrc_toqi && ghq get kazuhikoh/slack-post
+    ln -s ~/go/src/github.com/kazuhikoh/slack-post/slack-post.sh ~/bin/slack-post
+    chmod +x ~/bin/slack-post
+  args:
+    creates: ~/bin/slack-post
+
+- name: install kazuhikoh/gmr
+  command: npm install -g kazuhikoh/gmr
+
+- name: install kazuhikoh/agrec
+  shell: |
+    . ~/.bashrc_toqi && ghq get kazuhikoh/agrec
+    ln -s ~/go/src/github.com/kazuhikoh/agrec/agrec.sh ~/bin/agrec
+    chmod +x ~/bin/agrec
+  args:
+    creates: ~/bin/agrec
+
+- name: kazuhikoh/hibikiradio
+  command: npm install -g kazuhikoh/hibikiradio
+
+- name: install kazuhikoh/radiru
+  command: npm install -g kazuhikoh/radiru
+
+- name: crontab
+  shell: crontab ~/.crontab
+
